@@ -8,9 +8,11 @@
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
     <!-- sbb CSS -->
     <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <script th:src="@{/bootstrap.min.js}"></script>
     <title>Hello, sbb!</title>
 </head>
 <body>
+<div th:replace="~{nav_bar :: navbarFragment}" />
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
 <th:block layout:fragment="content"></th:block>
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
