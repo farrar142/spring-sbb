@@ -5,7 +5,8 @@ gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-local.mv.db
+local.*.db
+./local.*.db
 
 ### STS ###
 .apt_generated
