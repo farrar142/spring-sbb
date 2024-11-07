@@ -29,7 +29,7 @@ public class QuestionService {
         }
     }
 
-    public Question createQuestion(String subject, String content) {
+    public Question create(String subject, String content) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
