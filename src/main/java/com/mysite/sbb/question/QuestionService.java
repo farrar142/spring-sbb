@@ -38,12 +38,20 @@ public class QuestionService {
         }
     }
 
-    public Question create(String subject, String content,SiteUser siteUser) {
+    public Question create(String subject, String content, SiteUser siteUser) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
         question.setCreateDate(LocalDateTime.now());
         question.setAuthor(siteUser);
+        this.questionRepository.save(question);
+        return question;
+    }
+    
+    public Question modify(Question question, String subject, String content) {
+        question.setSubject(subject);
+        question.setContent(content);
+        question.setModifyDate(LocalDateTime.now());
         this.questionRepository.save(question);
         return question;
     }
