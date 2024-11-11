@@ -71,8 +71,8 @@ public class QuestionController {
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        questionForm.setSubject(questionForm.getSubject());
-        questionForm.setContent(questionForm.getContent());
+        questionForm.setSubject(question.getSubject());
+        questionForm.setContent(question.getContent());
         return "question_form";
     }
     @PreAuthorize("isAuthenticated()")
