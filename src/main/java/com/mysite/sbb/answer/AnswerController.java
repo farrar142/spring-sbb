@@ -89,7 +89,7 @@ public class AnswerController {
         Answer answer = this.answerService.getAnswer(id);
         SiteUser user = this.userService.getUser(principal.getName());
         this.answerService.vote(answer, user);
-        return String.format("redirect:/question/detail/%s", answer.getQuestion(). getId());
+        return String.format("redirect:/question/detail/%s#answer_#s", answer.getQuestion().getId(),answer.getId());
     }
     
 }
