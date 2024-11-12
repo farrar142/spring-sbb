@@ -21,8 +21,8 @@
                 <a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
                 th:data-uri="@{|/question/vote/${question.id}|}">
                 추천
-                <span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
-            </a>
+                    <span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}"></span>
+                </a>
                 <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-sm btn-outline-secondary"
                     sec:authorize="isAuthenticated()"
                     th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.getAuthor().getUsername()}"
@@ -77,6 +77,26 @@
                        class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                        th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                        th:text="삭제"></a>
+                       <!-- 오른쪽 버튼 -->
+                    <a href="javascript:void(0);" class="comment btn btn-sm btn-outline-secondary"
+                       th:id="|answer-${answer.id}|" th:text="|댓글 ${#lists.size(answer.getCommentList())}|">
+                    </a>
+                </div>
+                <div class="container my-3">
+                    <div class="card my-3" th:each="comment : ${answer.getCommentList()}" style="display: none"
+                    th:id="|comment-answer-${answer.id}|">
+                        <div class="card-body">
+                            <div class="card-text" th:utext="${comment.content}"></div>
+                            <div class="d-flex justify-content-end">
+                                <div class="badge bg-light text-dark p-2 text-start">
+                                    <div class="mb-2">
+                                        <span th:if="${comment.author != null}" th:text="${comment.author.username}"></span>
+                                    </div>
+                                    <div th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -133,6 +153,22 @@
         Array.from(order_elements).forEach(function(element) {
             element.addEventListener('click', function() {
                 location.href = this.dataset.uri;
+            })
+        })
+        
+        const comment_elements = document.getElementsByClassName("comment btn");
+        Array.from(comment_elements).forEach(function(element) {
+            element.addEventListener('click', function() {
+                const comment_table = document.getElementById("comment-" + element.id)
+                if (comment_table.style.display === 'none') {
+                    comment_table.style.display = 'block';
+                    element.style.background = 'gray';
+                    element.style.color = 'white';
+                } else {
+                    comment_table.style.display = 'none';
+                    element.style.background = 'white';
+                    element.style.color = 'gray';
+                }
             })
         })
     </script>
