@@ -36,8 +36,17 @@
         </div>
     </div>
     <!--답변페이징-->
-    <h5 class="border-bottom my-3 py-2" 
-        th:text="|${answerPaging.getTotalElements}개의 답변이 있습니다.|"></h5>
+        <h5 class="border-bottom my-3 py-2"
+        th:text="|${#lists.size(answerPaging.getTotalElements)}개의 답변이 있습니다.|"></h5>
+        <span>
+            정렬 기준:
+        </span>
+        <a href="javascript:void(0);" class="ordering btn btn-sm btn-outline-secondary"
+        th:data-uri="@{|/question/detail/${question.id}?answerOrdering=vote|}" th:text="추천순">
+        </a>
+        <a href="javascript:void(0);" class="ordering btn btn-sm btn-outline-secondary"
+            th:data-uri="@{|/question/detail/${question.id}?answerOrdering=time|}" th:text="시간순">
+        </a>
         <div class="card my-3" th:each="answer, loop : ${answerPaging}">
             <a th:id="|answer_${answer.id}|"></a>
             <div class="card-body">
@@ -119,5 +128,12 @@
                 };
             });
         });
+            
+        const order_elements = document.getElementsByClassName('ordering');
+        Array.from(order_elements).forEach(function(element) {
+            element.addEventListener('click', function() {
+                location.href = this.dataset.uri;
+            })
+        })
     </script>
 </html>
