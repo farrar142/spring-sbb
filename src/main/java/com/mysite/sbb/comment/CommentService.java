@@ -38,6 +38,10 @@ public class CommentService {
         this.commentRepository.save(comment);
         return comment;
     }
+
+    public void deleteComment(Comment comment) {
+        this.commentRepository.delete(comment);
+    }
     
     public List<Comment> getCommentList(Optional<Question> question, Optional<Answer> answer) {
         if (question.isPresent()) {

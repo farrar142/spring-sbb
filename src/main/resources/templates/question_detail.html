@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                             <div class="my-3">
-                                <a href="@{|/comment/delete/${comment.id}|}"
+                                <a th:href="@{|/comment/delete/${comment.id}|}"
                                 class="btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                                 th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}"
                                 th:text="삭제"></a>
