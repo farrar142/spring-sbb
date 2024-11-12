@@ -44,11 +44,14 @@ public class QuestionController {
     }
     
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm, @RequestParam(value="answerPage",defaultValue="0") int answerPage) {
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+            @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
+            @RequestParam(value="answerOrdering",defaultValue="vote") String answerOrdering) {
         Question question = this.questionService.getQuestion(id);
-        Page<Answer> answerPaging = this.answerService.getAnswers(question, answerPage);
+        Page<Answer> answerPaging = this.answerService.getAnswers(question, answerPage,answerOrdering);
         model.addAttribute("question", question);
-        model.addAttribute("answerPaging",answerPaging);
+        model.addAttribute("answerPaging", answerPaging);
+        model.addAttribute("answerOrdering", answerOrdering);
         return "question_detail";
     }
     
