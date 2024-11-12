@@ -34,9 +34,13 @@ public class AnswerService {
         return answer;
     }
 
-    public Page<Answer> getAnswers(Question question, int page) {
+    public Page<Answer> getAnswers(Question question, int page,String ordering) {
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createDate"));
+        if (ordering.equals("vote")) { 
+            sorts.add(Sort.Order.desc("voter"));   
+        } else {
+            sorts.add(Sort.Order.desc("createDate"));
+        }
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.answerRepository.findByQuestion(question, pageable);
 
