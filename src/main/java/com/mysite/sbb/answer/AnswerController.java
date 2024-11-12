@@ -1,6 +1,7 @@
 package com.mysite.sbb.answer;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryService;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
 import com.mysite.sbb.user.SiteUser;
@@ -30,6 +33,7 @@ public class AnswerController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{id}")
@@ -48,8 +52,11 @@ public class AnswerController {
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String answerModify(AnswerForm answerForm, @PathVariable("id") Integer id,
+    public String answerModify(Model model,AnswerForm answerForm, @PathVariable("id") Integer id,
             Principal principal) {
+                
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list",categoryList);
         Answer answer = this.answerService.getAnswer(id);
         if (!answer.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");

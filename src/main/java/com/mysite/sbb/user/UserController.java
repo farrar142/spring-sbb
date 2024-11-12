@@ -1,10 +1,16 @@
 package com.mysite.sbb.user;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +22,12 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @GetMapping("/signup")
-    public String signup(UserCreateForm userCreateForm) {
+    public String signup(Model model, UserCreateForm userCreateForm) {
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list",categoryList);
         return "signup_form";
     }
 
@@ -47,7 +56,9 @@ public class UserController {
     }
     
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list",categoryList);
         return "login_form";
     }
     

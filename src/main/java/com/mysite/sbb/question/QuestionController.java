@@ -1,6 +1,9 @@
 package com.mysite.sbb.question;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerForm;
 import com.mysite.sbb.answer.AnswerService;
+import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryService;
 import com.mysite.sbb.comment.CommentForm;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
@@ -35,13 +40,32 @@ public class QuestionController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,@RequestParam(value="kw",defaultValue="") String kw) {
+    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "kw", defaultValue = "") String kw) {
         Page<Question> paging = this.questionService.getList(page, kw);
+        List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
+        model.addAttribute("category_list", categoryList);
         return "question_list";
+    }
+    
+    @GetMapping("/category/{categoryName}")
+    public String list(Model model,
+            @PathVariable(value="categoryName") String categoryName,
+            @RequestParam(value="page",defaultValue="0") int page,
+            @RequestParam(value = "kw", defaultValue = "") String kw) {
+        Category category = this.categoryService.getCategoryByName(categoryName);
+        Page<Question> paging = this.questionService.getCategoryQuestionList(category,page, kw);
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("paging", paging);
+        model.addAttribute("kw", kw);
+        model.addAttribute("category_list", categoryList);
+        model.addAttribute("category", category);
+        return "category_question_list";
     }
     
     @GetMapping(value = "/detail/{id}")
@@ -49,16 +73,20 @@ public class QuestionController {
             @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
             @RequestParam(value="answerOrdering",defaultValue="vote") String answerOrdering) {
         Question question = this.questionService.getQuestion(id);
+        List<Category> categoryList = this.categoryService.getCategoryList();
         Page<Answer> answerPaging = this.answerService.getAnswers(question, answerPage,answerOrdering);
         model.addAttribute("question", question);
         model.addAttribute("answerPaging", answerPaging);
         model.addAttribute("answerOrdering", answerOrdering);
+        model.addAttribute("category_list",categoryList);
         return "question_detail";
     }
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value="/create")
-    public String questionCreate(QuestionForm questionForm) {
+    public String questionCreate(Model model,QuestionForm questionForm) {
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list",categoryList);
         return "question_form";
     }
 
@@ -66,16 +94,23 @@ public class QuestionController {
     @PostMapping(value="/create")
     public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
         SiteUser siteUser = this.userService.getUser(principal.getName());
+        Category category = this.categoryService.getCategoryByName(questionForm.getCategory());
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        this.questionService.create(questionForm.getSubject(),questionForm.getContent(),siteUser);
-        return "redirect:/question/list";
+        this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, category);
+
+        String encodedCategoryName = URLEncoder.encode(category.getName(), StandardCharsets.UTF_8);
+        return String.format("redirect:/question/category/%s", encodedCategoryName);
     }
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
-    public String questionModify(QuestionForm questionForm, @PathVariable("id") Integer id, Principal principal) {
+    public String questionModify(Model model, QuestionForm questionForm, @PathVariable("id") Integer id,
+            Principal principal) {
+        
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list",categoryList);
         Question question = this.questionService.getQuestion(id);
         if (!question.getAuthor().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.category.Category;
 import com.mysite.sbb.user.SiteUser;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -30,11 +31,18 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public Page<Question> getList(int page,String kw) {
+    public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return this.questionRepository.findAllByKeyword(kw,pageable);
+        return this.questionRepository.findAllByKeyword(kw, pageable);
+    }
+    
+    public Page<Question> getCategoryQuestionList(Category category, int page, String kw) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.questionRepository.findAllByKeywordAndCategory(category.getName(),kw, pageable);
     }
     
     public Question getQuestion(Integer id) {
@@ -46,12 +54,13 @@ public class QuestionService {
         }
     }
 
-    public Question create(String subject, String content, SiteUser siteUser) {
+    public Question create(String subject, String content, SiteUser siteUser,Category category) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
         question.setCreateDate(LocalDateTime.now());
         question.setAuthor(siteUser);
+        question.setCategory(category);
         this.questionRepository.save(question);
         return question;
     }
