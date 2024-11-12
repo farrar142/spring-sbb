@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerForm;
+import com.mysite.sbb.answer.AnswerService;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
 
@@ -30,21 +32,26 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class QuestionController {
     private final QuestionService questionService;
+    private final AnswerService answerService;
     private final UserService userService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") String page,@RequestParam(value="kw",defaultValue="") String kw) {
-        int pageInt = Integer.parseInt(page);
-        Page<Question> paging = this.questionService.getList(pageInt,kw);
+    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,@RequestParam(value="kw",defaultValue="") String kw) {
+        Page<Question> paging = this.questionService.getList(page, kw);
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
         return "question_list";
     }
     
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm) {
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+            @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
+            @RequestParam(value="answerOrdering",defaultValue="vote") String answerOrdering) {
         Question question = this.questionService.getQuestion(id);
+        Page<Answer> answerPaging = this.answerService.getAnswers(question, answerPage,answerOrdering);
         model.addAttribute("question", question);
+        model.addAttribute("answerPaging", answerPaging);
+        model.addAttribute("answerOrdering", answerOrdering);
         return "question_detail";
     }
     

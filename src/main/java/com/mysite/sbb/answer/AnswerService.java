@@ -1,8 +1,14 @@
 package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
@@ -26,6 +32,18 @@ public class AnswerService {
         answer.setAuthor(siteUser);
         this.answerRepository.save(answer);
         return answer;
+    }
+
+    public Page<Answer> getAnswers(Question question, int page,String ordering) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        if (ordering.equals("vote")) { 
+            sorts.add(Sort.Order.desc("voter"));   
+        } else {
+            sorts.add(Sort.Order.desc("createDate"));
+        }
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.answerRepository.findByQuestion(question, pageable);
+
     }
     
     public Answer getAnswer(Integer id) {
