@@ -30,11 +30,12 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public Page<Question> getList(int page) {
+    public Page<Question> getList(int page,String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
-        Pageable pageable = PageRequest.of(page, 10,Sort.by(sorts));
-        return this.questionRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Specification<Question> spec = search(kw);
+        return this.questionRepository.findAll(spec,pageable);
     }
     
     public Question getQuestion(Integer id) {
