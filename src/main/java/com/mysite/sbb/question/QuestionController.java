@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerForm;
 import com.mysite.sbb.answer.AnswerService;
+import com.mysite.sbb.comment.CommentForm;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
 
@@ -44,7 +45,7 @@ public class QuestionController {
     }
     
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,CommentForm commentForm,
             @RequestParam(value = "answerPage", defaultValue = "0") int answerPage,
             @RequestParam(value="answerOrdering",defaultValue="vote") String answerOrdering) {
         Question question = this.questionService.getQuestion(id);

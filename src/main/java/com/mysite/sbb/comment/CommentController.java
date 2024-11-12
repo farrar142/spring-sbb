@@ -37,23 +37,29 @@ public class CommentController {
     @PostMapping("/create")
     public String createComment(CommentForm commentForm, BindingResult bindingResult, Principal principal) {
         SiteUser siteUser = this.userService.getUser(principal.getName());
-        Optional<Integer> questionId = commentForm.getQuestionId();
-        Optional<Integer> answerId = commentForm.getAnswerId();
-        if (questionId.isEmpty() && answerId.isEmpty()) {
+        Integer questionId = commentForm.getQuestionId();
+        Integer answerId = commentForm.getAnswerId();
+        System.out.println(commentForm);
+        
+        System.out.println(commentForm.getContent());
+        System.out.println(commentForm.getAnswerId());
+        if (questionId == null && answerId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "부모의 id는 필수 값입니다.");
-        } else if (questionId.isPresent() && answerId.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Answer 혹은 Question 한쪽의 id가 필요합니다.");
         }
+        System.out.println("부모아이디 체크 넘김");
         Optional<Question> question = Optional.empty();
         Optional<Answer> answer = Optional.empty();
 
-        if (questionId.isPresent()) {
-            question = Optional.of(this.questionService.getQuestion(questionId.get()));
+        if (!(questionId == null)) {
+            question = Optional.of(this.questionService.getQuestion(questionId));
         } else {
-            answer = Optional.of(this.answerService.getAnswer(answerId.get()));
+            Answer a = this.answerService.getAnswer(answerId);
+            answer = Optional.of(a);
+            questionId = a.getQuestion().getId();
         }
+        System.out.println("만들기 전");
         this.commentService.createComment(question, answer, siteUser, commentForm.getContent());
-        return new String();
+        return String.format("redirect:/question/detail/%s", questionId);
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")

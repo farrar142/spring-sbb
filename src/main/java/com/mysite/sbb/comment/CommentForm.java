@@ -1,7 +1,5 @@
 package com.mysite.sbb.comment;
 
-import java.util.Optional;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -14,6 +12,6 @@ public class CommentForm {
     @Size(max=200)
     private String content;
 
-    private Optional<Integer> answerId;
-    private Optional<Integer >questionId;
+    private Integer answerId;
+    private Integer questionId;
 }
