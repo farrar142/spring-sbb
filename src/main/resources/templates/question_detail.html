@@ -95,6 +95,12 @@
                                     <div th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                                 </div>
                             </div>
+                            <div class="my-3">
+                                <a href="@{|/comment/delete/${comment.id}|}"
+                                class="btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+                                th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.username}"
+                                th:text="삭제"></a>
+                            </div>
                         </div>
                     </div>
                 </div>
