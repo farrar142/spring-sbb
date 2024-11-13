@@ -9,7 +9,7 @@ RUN microdnf install findutils
 ARG JAR_FILE=/usr/src/app/build/libs/*.jar
 
 COPY . .
-RUN chmod 777 ./gradlew
+RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
 
 EXPOSE 8080
