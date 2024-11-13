@@ -27,7 +27,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     @Query("SELECT DISTINCT q FROM Question q LEFT OUTER JOIN SiteUser u1 ON q.author = u1 LEFT OUTER JOIN Answer a ON a.question = q LEFT OUTER JOIN SiteUser u2 ON a.author = u2 WHERE q.subject LIKE %:kw% OR q.content LIKE %:kw% OR u1.username LIKE %:kw% OR a.content LIKE %:kw% OR u2.username LIKE %:kw%")
     Page<Question> findAllByKeyword(@Param("kw") String kw, Pageable pageable);
 
-    @Query("SELECT DISTINCT q FROM Question q LEFT OUTER JOIN SiteUser u1 ON q.author = u1 LEFT OUTER JOIN Answer a ON a.question = q LEFT OUTER JOIN SiteUser u2 ON a.author = u2 WHERE (q.subject LIKE %:kw% OR q.content LIKE %:kw% OR u1.username LIKE %:kw% OR a.content LIKE %:kw% OR u2.username LIKE %:kw%) and c.name=:category")
+    @Query("SELECT DISTINCT q FROM Question q LEFT OUTER JOIN SiteUser u1 ON q.author = u1 LEFT OUTER JOIN Answer a ON a.question = q LEFT OUTER JOIN SiteUser u2 ON a.author = u2 LEFT OUTER JOIN Category c ON q.category = c WHERE (q.subject LIKE %:kw% OR q.content LIKE %:kw% OR u1.username LIKE %:kw% OR a.content LIKE %:kw% OR u2.username LIKE %:kw%) and c.name=:category")
     Page<Question> findAllByKeywordAndCategory(@Param("category") String category, @Param("kw") String kw, Pageable pageable);
     
 
