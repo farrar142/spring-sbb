@@ -57,7 +57,7 @@ public class CommentService {
         throw new DataNotFoundException("comment not found");
     }
     
-    public Page<Comment> getUserAnswerList(SiteUser user, int page) {
+    public Page<Comment> getUserCommentList(SiteUser user, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
