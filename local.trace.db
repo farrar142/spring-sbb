@@ -7887,3 +7887,18 @@ alter table if exists question alter column views set data type integer default 
 2024-11-13 17:21:06.187417+09:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
 alter table if exists question alter column views set data type integer default 0 [42000-224]
+2024-11-13 17:24:59.449448+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
+alter table if exists question alter column views set data type integer default 0 [42000-224]
+2024-11-13 17:26:54.776725+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
+alter table if exists question alter column views set data type integer default 0 [42000-224]
+2024-11-13 17:29:26.401301+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
+alter table if exists question alter column views set data type integer default 0 [42000-224]
+2024-11-13 17:31:04.453918+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
+alter table if exists question alter column views set data type integer default 0 [42000-224]
+2024-11-13 17:32:54.683344+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists question alter column views set data type integer [*]default 0"; SQL statement:
+alter table if exists question alter column views set data type integer default 0 [42000-224]

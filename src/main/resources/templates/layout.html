@@ -20,5 +20,29 @@
 <!-- 자바스크립트 Start -->
 <th:block layout:fragment="script"></th:block>
 <!-- 자바스크립트 End -->
+ 
+<!-- SimpleMDE JavaScript -->
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+
+<!-- Initialize Markdown Editors when Document is Fully Loaded -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // IDs of the textareas where the Markdown editor will be applied
+        var editorIds = ['markdownEditorQuestion', 'markdownEditorAnswer'];
+
+        // Initialize SimpleMDE on each textarea with sanitize set to false
+        editorIds.forEach(function(id) {
+            var element = document.getElementById(id);
+            if (element) {
+                new SimpleMDE({
+                    element: element,
+                    spellChecker: false,
+                    sanitize: false // XSS attacks should be considered
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>
