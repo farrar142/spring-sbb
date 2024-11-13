@@ -43,12 +43,15 @@ public class QuestionController {
     private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "kw", defaultValue = "") String kw) {
-        Page<Question> paging = this.questionService.getList(page, kw);
+    public String list(Model model, 
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "kw", defaultValue = "") String kw,
+            @RequestParam(value="ordering",defaultValue="createDate") String ordering) {
+        Page<Question> paging = this.questionService.getList(page, kw,ordering);
         List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
+        model.addAttribute("ordering", ordering);
         model.addAttribute("category_list", categoryList);
         return "question_list";
     }
@@ -57,12 +60,14 @@ public class QuestionController {
     public String list(Model model,
             @PathVariable(value="categoryName") String categoryName,
             @RequestParam(value="page",defaultValue="0") int page,
-            @RequestParam(value = "kw", defaultValue = "") String kw) {
+            @RequestParam(value = "kw", defaultValue = "") String kw,
+            @RequestParam(value="ordering",defaultValue="createDate") String ordering) {
         Category category = this.categoryService.getCategoryByName(categoryName);
-        Page<Question> paging = this.questionService.getCategoryQuestionList(category,page, kw);
+        Page<Question> paging = this.questionService.getCategoryQuestionList(category,page, kw,ordering);
         List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
+        model.addAttribute("ordering", ordering);
         model.addAttribute("category_list", categoryList);
         model.addAttribute("category", category);
         return "category_question_list";

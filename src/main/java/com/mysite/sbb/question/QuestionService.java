@@ -31,17 +31,31 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
     private final QuestionRepository questionRepository;
 
-    public Page<Question> getList(int page, String kw) {
+    public Page<Question> getList(int page, String kw,String ordering) {
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        if (ordering.equals("latestAnswer")) {
+            return this.questionRepository.findQuestionsByKeywordWithLatestAnswerDate(kw, pageable);
+        }else if (
+            ordering.equals("latestComment")
+        ){
+            return this.questionRepository.findQuestionsByKeywordWithLatestCommentDate(kw, pageable);
+        }
+        sorts.add(Sort.Order.desc("createDate"));
         return this.questionRepository.findAllByKeyword(kw, pageable);
     }
 
-    public Page<Question> getCategoryQuestionList(Category category, int page, String kw) {
+    public Page<Question> getCategoryQuestionList(Category category, int page, String kw,String ordering) {
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        if (ordering.equals("latestAnswer")) {
+            return this.questionRepository.findQuestionsByKeywordAndCategoryWithLatestAnswerDate(category.getName(), kw, pageable);
+        }else if (
+            ordering.equals("latestComment")
+        ){
+            return this.questionRepository.findQuestionsByKeywordAndCategoryWithLatestCommentDate(category.getName(), kw, pageable);
+        }
+        sorts.add(Sort.Order.desc("createDate"));
         return this.questionRepository.findAllByKeywordAndCategory(category.getName(), kw, pageable);
     }
     
