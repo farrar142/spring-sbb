@@ -90,9 +90,9 @@ public class UserController {
         Page<Question> questionList = this.questionService.getUserQuestionList(user, qPage);
         Page<Answer> answerList = this.answerService.getUserAnswerList(user, aPage);
         Page<Comment> commentList = this.commentService.getUserCommentList(user, cPage);
-        model.addAttribute("questionPaging", questionList);
-        model.addAttribute("answerPaging", answerList);
-        model.addAttribute("commentPaging", commentList);
+        model.addAttribute("question_paging", questionList);
+        model.addAttribute("answer_paging", answerList);
+        model.addAttribute("comment_paging", commentList);
         return "profile_detail";
         
     }
