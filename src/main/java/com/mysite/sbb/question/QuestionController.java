@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +29,7 @@ import com.mysite.sbb.comment.CommentForm;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +49,9 @@ public class QuestionController {
     public String list(Model model, 
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "kw", defaultValue = "") String kw,
-            @RequestParam(value="ordering",defaultValue="createDate") String ordering) {
+            @RequestParam(value = "ordering", defaultValue = "createDate") String ordering) {
+                
+        
         Page<Question> paging = this.questionService.getList(page, kw,ordering);
         List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("paging", paging);

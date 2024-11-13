@@ -1,0 +1,13 @@
+<html>
+    잠시 기다려 주세요
+    
+<script layout:fragment="script" type='text/javascript' th:inline="javascript">
+    var CLIENT_ID = [[${CLIENT_ID}]];
+    var REDIRECT_URL = [[${REDIRECT_URI}]]
+
+    location.href = `https://kauth.kakao.com/oauth/authorize
+        ?client_id=${CLIENT_ID}
+        &redirect_uri=${REDIRECT_URI}
+        &response_type=code`
+</script>
+</html>

@@ -1,21 +1,43 @@
 package com.mysite.sbb.user;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerService;
 import com.mysite.sbb.category.Category;
@@ -25,6 +47,8 @@ import com.mysite.sbb.comment.CommentService;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +64,11 @@ public class UserController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final CommentService commentService;
+    private final KakaoService kakaoService;
     private final MailSender mailSender;
+    private final Environment env;
+    private final AuthenticationManager authenticationManager;
+
 
     @GetMapping("/signup")
     public String signup(Model model, UserCreateForm userCreateForm) {
@@ -80,6 +108,39 @@ public class UserController {
         return "login_form";
     }
     
+    @GetMapping("/kakao/login")
+    public String kakaoLogin() {
+        return "redirect:https://kauth.kakao.com/oauth/authorize" +
+                "?client_id=" + env.getProperty("KAKAO_CLIENT_KEY") +
+                "&redirect_uri=" + env.getProperty("KAKAO_REDIRECT_URI") +
+                "&response_type=code";
+    }
+
+    @GetMapping("/kakao/callback")
+    public String kakaoCallback(@RequestParam(value = "code", defaultValue = "") String code,HttpServletRequest request)
+            throws JsonProcessingException {
+        if (code.equals("")) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "잘못된 코드입니다.");
+        }
+        String token = this.kakaoService.getAccessToken(code);
+        KakaoInfo info = this.kakaoService.getKakaoInfo(token);
+        UserService.UserContainer container = this.userService.getOrCreateKakaoUser(info);
+        
+        Authentication authentication = new UsernamePasswordAuthenticationToken(container.getUser().getUsername(), container.getPassword());
+        try{
+
+            Authentication authenticated = this.authenticationManager.authenticate(authentication);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authenticated);
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+            return "redirect:/";
+        } catch (Exception e) {
+            System.out.println(e);
+            return "redirect:/";
+        }
+    }
+
     private void setContents(Model model,SiteUser user,int qPage,int aPage,int cPage) {
         
         List<Category> categoryList = this.categoryService.getCategoryList();
