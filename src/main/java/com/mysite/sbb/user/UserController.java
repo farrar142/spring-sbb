@@ -93,7 +93,7 @@ public class UserController {
         model.addAttribute("questionPaging", questionList);
         model.addAttribute("answerPaging", answerList);
         model.addAttribute("commentPaging", commentList);
-        return "profile_view";
+        return "profile_detail";
         
     }
     
