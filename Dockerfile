@@ -9,6 +9,7 @@ RUN microdnf install findutils
 ARG JAR_FILE=/usr/src/app/build/libs/*.jar
 
 COPY . .
+RUN chmod 777 ./gradlew
 RUN ./gradlew clean
 RUN ./gradlew build -x test
 
