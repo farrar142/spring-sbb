@@ -37,7 +37,7 @@ public class QuestionService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.questionRepository.findAllByKeyword(kw, pageable);
     }
-    
+
     public Page<Question> getCategoryQuestionList(Category category, int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
@@ -45,12 +45,14 @@ public class QuestionService {
         return this.questionRepository.findAllByKeywordAndCategory(category.getName(), kw, pageable);
     }
     
+
     public Page<Question> getUserQuestionList(SiteUser user, int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return this.questionRepository.findByAuthor(user,pageable);
+        return this.questionRepository.findByAuthor(user, pageable);
     }
+    
     
     public Question getQuestion(Integer id) {
         Optional<Question> question = this.questionRepository.findById(id);
