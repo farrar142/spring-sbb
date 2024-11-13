@@ -2,8 +2,11 @@ package com.mysite.sbb.user;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +40,7 @@ public class UserController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final CommentService commentService;
+    private final MailSender mailSender;
 
     @GetMapping("/signup")
     public String signup(Model model, UserCreateForm userCreateForm) {
@@ -130,6 +134,48 @@ public class UserController {
         this.userService.updatePassword(user,userPasswordChangeForm.getPassword1());
         return "profile_detail";
     }
-    
+    @GetMapping("/reset_password")
+    public String resetPassword(Model model) {
+        model.addAttribute("error", false);
+        model.addAttribute("sendConfirm", false);
+        model.addAttribute("email", false);
+        return "reset_password";
+    }
 
+    @PostMapping("/reset_password")
+    public String sendResetPasswordEmail(Model model, @RequestParam(value = "email") String email) {
+        model.addAttribute("error", false);
+        model.addAttribute("sendConfirm", true);
+        model.addAttribute("email", email);
+        try{
+
+            SiteUser user = this.userService.getUserByEmail(email);
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setTo(email);
+            simpleMailMessage.setSubject("계정 정보입니다.");
+            StringBuilder sb = new StringBuilder();
+    
+            String newPassword = UUID.randomUUID().toString().replaceAll("-","");
+            sb.append(user.getUsername())
+                .append("계정의 비밀번호를 새롭게 초기화 했습니다..\n").append("새 비밀번호는 ")
+                .append(newPassword).append("입니다.\n")
+                .append("로그인 후 내 정보에서 새로 비밀번호를 지정해주세요.");
+            simpleMailMessage.setText(sb.toString());
+            this.userService.updatePassword(user, newPassword);
+            
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mailSender.send(simpleMailMessage);
+                }
+            }).start();
+            return "reset_password";
+        } catch (Exception e) {
+            model.addAttribute("error", true);
+            model.addAttribute("sendConfirm", false);
+            model.addAttribute("email", email);
+            return "reset_password";
+        }
+
+    }
 }

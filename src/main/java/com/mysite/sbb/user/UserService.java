@@ -33,6 +33,15 @@ public class UserService {
         throw new DataNotFoundException("siteuser not found");
     }
 
+    public SiteUser getUserByEmail(String email) {
+        Optional<SiteUser> siteUser = this.userRepository.findByEmail(email);
+        if (siteUser.isPresent()) {
+            return siteUser.get();
+        }
+        throw new DataNotFoundException("siteuser not found");
+        
+    }
+
     public boolean isMatchPassword(SiteUser user, String password) {
         return this.passwordEncoder.matches(password, user.getPassword());
     }
