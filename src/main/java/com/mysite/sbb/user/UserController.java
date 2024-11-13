@@ -26,6 +26,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/user")
@@ -75,15 +76,8 @@ public class UserController {
         return "login_form";
     }
     
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/profile")
-    public String profile(Model model, Principal principal,
-            @RequestParam(value = "q_page", defaultValue = "0") int qPage,
-            @RequestParam(value="a_page",defaultValue="0") int aPage,
-            @RequestParam(value="c_page",defaultValue="0") int cPage
-            ) {
-        SiteUser user = this.userService.getUser(principal.getName());
-        // 카테고리
+    private void setContents(Model model,SiteUser user,int qPage,int aPage,int cPage) {
+        
         List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("category_list", categoryList);
         // 리소스
@@ -94,8 +88,48 @@ public class UserController {
         model.addAttribute("answer_paging", answerList);
         model.addAttribute("comment_paging", commentList);
         model.addAttribute("user", user);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/profile")
+    public String profile(
+            UserPasswordChangeForm userPasswordChangeForm, BindingResult bindingResult,
+            Model model, Principal principal,
+            @RequestParam(value = "q_page", defaultValue = "0") int qPage,
+            @RequestParam(value="a_page",defaultValue="0") int aPage,
+            @RequestParam(value="c_page",defaultValue="0") int cPage
+            ) {
+        SiteUser user = this.userService.getUser(principal.getName());
+        this.setContents(model, user, qPage, aPage, cPage);
         return "profile_detail";
-        
+    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/change_password")
+    public String updateProfile(
+        Model model, Principal principal,
+        @RequestParam(value = "q_page", defaultValue = "0") int qPage,
+        @RequestParam(value="a_page",defaultValue="0") int aPage,
+        @RequestParam(value="c_page",defaultValue="0") int cPage,UserPasswordChangeForm userPasswordChangeForm, BindingResult bindingResult) {
+        SiteUser user = this.userService.getUser(principal.getName());
+        this.setContents(model, user, qPage, aPage, cPage);
+        System.out.println(userPasswordChangeForm.getOriginPassword());
+        System.out.println(userPasswordChangeForm.getPassword1());
+        System.out.println(userPasswordChangeForm.getPassword2());
+        if (bindingResult.hasErrors()) {
+            return "profile_detail";
+        }
+        if (!this.userService.isMatchPassword(user, userPasswordChangeForm.getOriginPassword())) {
+            bindingResult.rejectValue("originPassword", "passwordInCorrect", "기존 패스워드가 일치하지 않습니다.");
+        }
+        if (!userPasswordChangeForm.getPassword1().equals(userPasswordChangeForm.getPassword2())) {
+            bindingResult.rejectValue("password2", "passwordNotMatched", "확인 패스워드가 일치하지 않습니다.");
+        }
+        if (bindingResult.hasErrors()) {
+            return "profile_detail";
+        }
+        this.userService.updatePassword(user,userPasswordChangeForm.getPassword1());
+        return "profile_detail";
     }
     
+
 }
