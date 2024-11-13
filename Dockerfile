@@ -10,7 +10,8 @@ ARG JAR_FILE=/usr/src/app/build/libs/*.jar
 
 COPY . .
 RUN chmod +x ./gradlew
-RUN ./gradlew wrapper
+RUN ./gradlew clean
+RUN ./gradlew wrap
 RUN ./gradlew build -x test
 
 EXPOSE 8080
