@@ -1,16 +1,26 @@
 package com.mysite.sbb.user;
 
+import java.security.Principal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.answer.AnswerService;
 import com.mysite.sbb.category.Category;
 import com.mysite.sbb.category.CategoryService;
+import com.mysite.sbb.comment.Comment;
+import com.mysite.sbb.comment.CommentService;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +33,9 @@ public class UserController {
 
     private final UserService userService;
     private final CategoryService categoryService;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
+    private final CommentService commentService;
 
     @GetMapping("/signup")
     public String signup(Model model, UserCreateForm userCreateForm) {
@@ -58,8 +71,30 @@ public class UserController {
     @GetMapping("/login")
     public String login(Model model) {
         List<Category> categoryList = this.categoryService.getCategoryList();
-        model.addAttribute("category_list",categoryList);
+        model.addAttribute("category_list", categoryList);
         return "login_form";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/profile")
+    public String profile(Model model, Principal principal,
+            @RequestParam(value = "q_page", defaultValue = "0") int qPage,
+            @RequestParam(value="a_page",defaultValue="0") int aPage,
+            @RequestParam(value="c_page",defaultValue="0") int cPage
+            ) {
+        SiteUser user = this.userService.getUser(principal.getName());
+        // 카테고리
+        List<Category> categoryList = this.categoryService.getCategoryList();
+        model.addAttribute("category_list", categoryList);
+        // 리소스
+        Page<Question> questionList = this.questionService.getUserQuestionList(user, qPage);
+        Page<Answer> answerList = this.answerService.getUserAnswerList(user, aPage);
+        Page<Comment> commentList = this.commentService.getUserCommentList(user, cPage);
+        model.addAttribute("questionPaging", questionList);
+        model.addAttribute("answerPaging", answerList);
+        model.addAttribute("commentPaging", commentList);
+        return "profile_view";
+        
     }
     
 }
