@@ -105,6 +105,17 @@ public class QuestionService {
         this.questionRepository.save(question);
     }
 
+    public void increaseViews(Question question) {
+        Integer views = 0;
+        if (question.getViews() == null) {
+            views += 1;
+        } else {
+            views = question.getViews() + 1;
+        }
+        question.setViews(views);
+        this.questionRepository.save(question);
+    }
+
 
     private Specification<Question> search(String kw) {
         String searchKw = "%"+kw+"%";

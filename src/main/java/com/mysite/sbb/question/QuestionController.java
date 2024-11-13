@@ -83,7 +83,14 @@ public class QuestionController {
         model.addAttribute("question", question);
         model.addAttribute("answerPaging", answerPaging);
         model.addAttribute("answerOrdering", answerOrdering);
-        model.addAttribute("category_list",categoryList);
+        model.addAttribute("category_list", categoryList);
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                questionService.increaseViews(question);
+            }
+        }).start();
+        
         return "question_detail";
     }
     
