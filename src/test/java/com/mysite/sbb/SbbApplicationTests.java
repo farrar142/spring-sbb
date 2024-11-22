@@ -1,5 +1,6 @@
 package com.mysite.sbb;
 
+import com.mysite.sbb.question.QuestionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,11 +17,11 @@ class SbbApplicationTests {
     @Autowired
     private QuestionService questionService;
     @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
     private UserService userService;
     @Test
     void testJpa() throws Exception {
-        SiteUser u = this.userService.getUser("sandring");
-        Page<Question> ql = this.questionService.getUserQuestionList(u, 0);
-        System.out.println(ql);
+//        questionRepository.deleteAll();
     }
 }
