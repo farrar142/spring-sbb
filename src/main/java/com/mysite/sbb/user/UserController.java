@@ -224,12 +224,7 @@ public class UserController {
             simpleMailMessage.setText(sb.toString());
             this.userService.updatePassword(user, newPassword);
             
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mailSender.send(simpleMailMessage);
-                }
-            }).start();
+            new Thread(() -> mailSender.send(simpleMailMessage)).start();
             return "reset_password";
         } catch (Exception e) {
             model.addAttribute("error", true);

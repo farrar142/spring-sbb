@@ -37,29 +37,21 @@ public class CommentController {
     @PostMapping("/create")
     public String createComment(CommentForm commentForm, BindingResult bindingResult, Principal principal) {
         SiteUser siteUser = this.userService.getUser(principal.getName());
-        Integer questionId = commentForm.getQuestionId();
-        Integer answerId = commentForm.getAnswerId();
-        System.out.println(commentForm);
-        
-        System.out.println(commentForm.getContent());
-        System.out.println(commentForm.getAnswerId());
-        if (questionId == null && answerId == null) {
+
+        Optional<Question> question = Optional.ofNullable(commentForm.getQuestionId()).map(questionService::getQuestion);
+        Optional<Answer> answer = Optional.ofNullable(commentForm.getAnswerId()).map(answerService::getAnswer);
+
+        if (question.isEmpty() && answer.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "부모의 id는 필수 값입니다.");
         }
-        System.out.println("부모아이디 체크 넘김");
-        Optional<Question> question = Optional.empty();
-        Optional<Answer> answer = Optional.empty();
 
-        if (!(questionId == null)) {
-            question = Optional.of(this.questionService.getQuestion(questionId));
-        } else {
-            Answer a = this.answerService.getAnswer(answerId);
-            answer = Optional.of(a);
-            questionId = a.getQuestion().getId();
-        }
-        System.out.println("만들기 전");
         this.commentService.createComment(question, answer, siteUser, commentForm.getContent());
-        return String.format("redirect:/question/detail/%s", questionId);
+
+        Integer qId = question.map(Question::getId)
+                .orElse(answer.map(Answer::getQuestion)
+                        .map(Question::getId)
+                        .orElse(0));
+        return String.format("redirect:/question/detail/%s", qId);
     }
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}")

@@ -33,10 +33,8 @@ public class CommentService {
     public Comment createComment(Optional<Question> question, Optional<Answer> answer, SiteUser siteUser,
             String content) {
         Comment comment = new Comment();
-        if (question.isPresent())
-            comment.setQuestion(question.get());
-        if (answer.isPresent())
-            comment.setAnswer(answer.get());
+        question.ifPresent(comment::setQuestion);
+        answer.ifPresent(comment::setAnswer);
         comment.setAuthor(siteUser);
         comment.setContent(content);
         comment.setCreateDate(LocalDateTime.now());
