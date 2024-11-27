@@ -68,7 +68,7 @@ public class QuestionController {
             @RequestParam(value = "kw", defaultValue = "") String kw,
             @RequestParam(value="ordering",defaultValue="createDate") String ordering) {
         Category category = this.categoryService.getCategoryByName(categoryName);
-        Page<Question> paging = this.questionService.getCategoryQuestionList(category,page, kw,ordering);
+        Page<Question> paging = this.questionService.getListByCategory(category,page, kw,ordering);
         List<Category> categoryList = this.categoryService.getCategoryList();
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);

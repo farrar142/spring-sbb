@@ -41,7 +41,7 @@ public class QuestionService {
 //        return this.questionRepository.findAllByKeyword(kw, pageable);
     }
 
-    public Page<Question> getCategoryQuestionList(Category category, int page, String kw,String ordering) {
+    public Page<Question> getListByCategory(Category category, int page, String kw,String ordering) {
         Pageable pageable = PageRequest.of(page, 10);
         return this.questionRepository.findAll(search(kw,Optional.empty(),Optional.of(category),ordering),pageable);
 //        if (ordering.equals("latestAnswer")) {
@@ -130,8 +130,8 @@ public class QuestionService {
                             cb.like(u1.get("username"), searchKw),
                             cb.like(a.get("content"),searchKw),
                             cb.like(u2.get("username"), searchKw)));
-                if (author.isPresent())conjunction = cb.and(conjunction,this.findByAuthor(q,query,cb));
-                if (category.isPresent())conjunction=cb.and(conjunction,this.findByCategory(q,query,cb));
+                conjunction = cb.and(conjunction,this.findByAuthor(q,query,cb));
+                conjunction = cb.and(conjunction,this.findByCategory(q,query,cb));
                 if (ordering.equals("latestComment")){this.orderByLatestComment(q,query,cb);}
                 else if (ordering.equals("latestAnswer")){this.orderByLatestAnswer(q,query,cb);}
                 else {this.orderByCreateDate(q,query,cb);}
