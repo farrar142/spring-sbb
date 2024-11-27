@@ -204,10 +204,9 @@ public class UserController {
     }
 
     @PostMapping("/reset_password")
-    public String sendResetPasswordEmail(Model model, @RequestParam(value = "email") String email) {
-        model.addAttribute("error", false);
-        model.addAttribute("sendConfirm", true);
-        model.addAttribute("email", email);
+    public String sendResetPasswordEmail(Model model,@RequestParam(value = "email") String email) {
+        boolean error = false;
+        boolean sendConfirm = true;
         try{
 
             SiteUser user = this.userService.getUserByEmail(email);
@@ -225,13 +224,14 @@ public class UserController {
             this.userService.updatePassword(user, newPassword);
             
             new Thread(() -> mailSender.send(simpleMailMessage)).start();
-            return "reset_password";
         } catch (Exception e) {
-            model.addAttribute("error", true);
-            model.addAttribute("sendConfirm", false);
-            model.addAttribute("email", email);
-            return "reset_password";
+            error = true;
+            sendConfirm = false;
         }
+        model.addAttribute("error", error);
+        model.addAttribute("sendConfirm", sendConfirm);
+        model.addAttribute("email", email);
 
+        return "reset_password";
     }
 }
