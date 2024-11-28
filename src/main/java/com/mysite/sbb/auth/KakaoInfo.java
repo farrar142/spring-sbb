@@ -1,4 +1,4 @@
-package com.mysite.sbb.user;
+package com.mysite.sbb.auth;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

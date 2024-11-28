@@ -70,12 +70,13 @@ public class QuestionController {
         Category category = this.categoryService.getCategoryByName(categoryName);
         Page<Question> paging = this.questionService.getListByCategory(category,page, kw,ordering);
         List<Category> categoryList = this.categoryService.getCategoryList();
+        paging.getContent();
         model.addAttribute("paging", paging);
         model.addAttribute("kw", kw);
         model.addAttribute("ordering", ordering);
         model.addAttribute("category_list", categoryList);
         model.addAttribute("category", category);
-        return "category_question_list";
+        return "question_list";
     }
     
     @GetMapping(value = "/detail/{id}")

@@ -1,4 +1,4 @@
-package com.mysite.sbb.user;
+package com.mysite.sbb.auth;
 
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
