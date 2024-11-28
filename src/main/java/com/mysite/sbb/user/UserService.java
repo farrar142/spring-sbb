@@ -3,6 +3,7 @@ package com.mysite.sbb.user;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.mysite.sbb.auth.KakaoInfo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class UserService {
             return new UserContainer(this.create(tempUserName, email,password),password);
         }
     }
+
 
     public SiteUser getUser(String username) {
         Optional<SiteUser> siteUser = this.userRepository.findByusername(username);
